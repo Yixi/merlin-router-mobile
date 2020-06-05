@@ -29,7 +29,9 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   Dio _dio = new Dio();
 
-  Future getSSConfig() => _dio.get("http://192.168.50.1/_api/ss").then((res) => convertSSConfig(res.data));
+  Future<SSConfig> getSSConfig() => _dio
+      .get("http://192.168.50.1/_api/ss")
+      .then((res) => convertSSConfig(res.data));
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +45,12 @@ class _DashboardState extends State<Dashboard> {
             var config = snapshot.data;
             return Column(
               children: <Widget>[
-                SSStatus(),
-                SSNodes(),
+                SSStatus(
+                  current: config.current,
+                ),
+                SSNodes(
+                  nodes: config.nodes,
+                ),
               ],
             );
           }
