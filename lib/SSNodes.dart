@@ -10,24 +10,12 @@ class SSNodes extends StatefulWidget {
   createState() => new _SSNodesState();
 }
 
-//class _SSNodesState extends State<SSNodes> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return Container(
-//      child: Column(
-//        children: widget.nodes.map((node) => Text(node.name)).toList()
-//      )
-//    );
-//  }
-//}
-
 class _SSNodesState extends State<SSNodes> {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-        child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
       child: GridView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 20),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 20,
@@ -38,7 +26,7 @@ class _SSNodesState extends State<SSNodes> {
           return SSNode(node: widget.nodes[index]);
         },
       ),
-    ));
+    );
   }
 }
 
