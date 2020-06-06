@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:merlin/SSNodes.dart';
 import 'package:merlin/http.dart';
@@ -15,32 +14,18 @@ class SSStatus extends StatefulWidget {
 }
 
 class _SSStatusState extends State<SSStatus> {
-  List<List<String>> status = [
-    [null, null],
-    [null, null]
-  ];
+  List<String> status = [null, null];
 
   @override
   void initState() {
     super.initState();
-    dio.post("/_api/", data: {
-      "id": generateProcessId(),
-      "method": "ss_status.sh",
-      "params": [],
-      "fields": ""
-    }).then((res) {
-      print(res);
+    dio.get("/ss-status").then((res) {
       var result = convertSSStatus(res.data);
       setState(() {
         this.status = result;
       });
-    }).catchError((error) {
-      print(error);
     });
 
-//    dio.get('/_api/ss').then((res) {
-//      print(res.data);
-//    });
   }
 
   @override
@@ -65,7 +50,7 @@ class _SSStatusState extends State<SSStatus> {
                         padding: EdgeInsets.only(right: 10),
                       ),
                       SSPing(
-                        ping: status[0][0],
+                        ping: status[0],
                       )
                     ],
                   ),
@@ -76,7 +61,7 @@ class _SSStatusState extends State<SSStatus> {
                         padding: EdgeInsets.only(right: 10),
                       ),
                       SSPing(
-                        ping: status[1][0],
+                        ping: status[1],
                       )
                     ],
                   ),

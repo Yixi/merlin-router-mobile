@@ -24,7 +24,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
 
   Future<SSConfig> getSSConfig() => dio
-      .get("/_api/ss")
+      .get("/ss-config")
       .then((res) => convertSSConfig(res.data));
 
   @override

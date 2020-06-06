@@ -40,11 +40,8 @@ Map<String, String> typeDes = {
   "3": "v2ray"
 };
 
-SSConfig convertSSConfig(dynamic data) {
-  Map<String, dynamic> result = data['result'][0];
-
+SSConfig convertSSConfig(dynamic result) {
   var current = generateCurrentInfo(result);
-
   return SSConfig(current: current, nodes: generateNodes(result));
 }
 
@@ -101,28 +98,6 @@ Map<String, List<String>> convertSSPing(dynamic resData) {
   return pings;
 }
 
-List<List<String>> convertSSStatus(dynamic resData) {
-  String result = resData['result'];
-  var status = result.split('@@');
-  print(status);
-  var foreignTimeMatch = RegExp("【(.*?)】").firstMatch(status[0]);
-  var foreignPingMatch = RegExp(r"(\d+)\sms").firstMatch(status[0]);
-  var inlandTimeMatch = RegExp("【(.*?)】").firstMatch(status[1]);
-  var inlandPingMatch = RegExp(r"(\d+)\sms").firstMatch(status[1]);
-
-  print(foreignTimeMatch.group(0));
-  print(foreignPingMatch.group(1));
-  print(inlandTimeMatch.group(0));
-  print(inlandPingMatch.group(1));
-
-  return [
-    [
-      foreignPingMatch != null ? foreignPingMatch[1] : null,
-      foreignTimeMatch != null ? foreignTimeMatch.group(0) : null
-    ],
-    [
-      inlandPingMatch != null ? inlandPingMatch[1] : null,
-      inlandTimeMatch != null ? inlandTimeMatch.group(0) : null
-    ]
-  ];
+List<String> convertSSStatus(dynamic resData) {
+  return [resData['foreign'], resData['inland']];
 }
