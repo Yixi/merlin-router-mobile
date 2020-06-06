@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:merlin/SSNodes.dart';
+import 'package:merlin/http.dart';
 import 'package:merlin/utils/SSDataConvert.dart';
 
 import 'SSStatus.dart';
@@ -12,12 +12,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              title: Text("Router"),
-            ),
-            body: Dashboard()));
+    return MaterialApp(home: Scaffold(body: Dashboard()));
   }
 }
 
@@ -27,10 +22,9 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  Dio _dio = new Dio();
 
-  Future<SSConfig> getSSConfig() => _dio
-      .get("http://192.168.50.1/_api/ss")
+  Future<SSConfig> getSSConfig() => dio
+      .get("/_api/ss")
       .then((res) => convertSSConfig(res.data));
 
   @override
@@ -43,15 +37,28 @@ class _DashboardState extends State<Dashboard> {
             return Text("Error: ${snapshot.error}");
           } else {
             var config = snapshot.data;
-            return Column(
-              children: <Widget>[
-                SSStatus(
-                  current: config.current,
+            return Scaffold(
+              backgroundColor: Color(0xFF1f2d3d),
+              appBar: PreferredSize(
+                preferredSize: Size(100, 120),
+                child: AppBar(
+                  elevation: 0,
+                  backgroundColor: Color(0xFF364251),
+                  flexibleSpace: SafeArea(
+                    child: SSStatus(
+                      current: config.current,
+                    ),
+                  ),
+                  brightness: Brightness.dark,
                 ),
-                SSNodes(
-                  nodes: config.nodes,
-                ),
-              ],
+              ),
+              body: Column(
+                children: <Widget>[
+                  SSNodes(
+                    nodes: config.nodes,
+                  ),
+                ],
+              ),
             );
           }
         } else {
