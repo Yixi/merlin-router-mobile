@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:merlin/SSNodes.dart';
 import 'package:merlin/http.dart';
@@ -20,8 +21,8 @@ class _SSStatusState extends State<SSStatus> {
   ];
 
   @override
-  Widget build(BuildContext context) {
-
+  void initState() {
+    super.initState();
     dio.post("/_api/", data: {
       "id": generateProcessId(),
       "method": "ss_status.sh",
@@ -33,10 +34,17 @@ class _SSStatusState extends State<SSStatus> {
       setState(() {
         this.status = result;
       });
-    }).catchError((error){
+    }).catchError((error) {
       print(error);
     });
 
+//    dio.get('/_api/ss').then((res) {
+//      print(res.data);
+//    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTextStyle(
       style: TextStyle(color: Color(0xFFf0f1f2)),
       child: Container(
