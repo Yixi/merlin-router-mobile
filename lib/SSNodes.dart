@@ -13,26 +13,21 @@ class SSNodes extends StatefulWidget {
 }
 
 class _SSNodesState extends State<SSNodes> {
-  Map<String, List<String>> pings;
+  Map<String, String> pings = Map();
+
+  void getServerPing() {
+    dio.get('/ss-ping').then((res) {
+      var result = convertSSPing(res.data);
+      setState(() {
+        this.pings = result;
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-//    dio.post("/_api/", data: {
-//      "id": generateProcessId(),
-//      "method": "ss_ping.sh",
-//      "params": [],
-//      "fields": ""
-//    }).then((res) => convertSSPing(res.data));
-
-    var pings = convertSSPing({
-      "result":
-          "W1siMSIsIjIwNS4yMDciLCIwJSJdLFsiMiIsIjQ2Ni4zMjEiLCIwJSJdLFsiMyIsIiIsIjEwMCUiXSxbIjQiLCIzNy42NTkiLCIwJSJdLFsiNSIsIjQxLjE1OSIsIjAlIl0sWyI2IiwiIiwiMTAwJSJdLFsiNyIsIjQ3Ljc0NyIsIjAlIl0sWyI4IiwiNTIuNTUyIiwiMCUiXSxbIjkiLCI0OS40MzQiLCIwJSJdLFsiMTAiLCI2NC4zMzciLCIwJSJdLFsiMTEiLCI1Ny4yODUiLCIwJSJdLFsiMTIiLCI0Ni4zNTciLCIwJSJdLFsiMTMiLCIiLCIxMDAlIl0sWyIxNCIsIiIsIjEwMCUiXSxbIjE1IiwiMTQ4LjQ2OSIsIjAlIl0sWyIxNiIsIjEzOC4zOTAiLCIwJSJdLFsiMTciLCIyNjEuODEzIiwiMCUiXSxbIjE4IiwiNTAuNTQ4IiwiMCUiXSxbIjE5IiwiMjg3LjU0MSIsIjAlIl0sWyIyMCIsIjExMi41NDIiLCIwJSJdLFsiMjEiLCI1Ni41MTMiLCIwJSJdLFsiMjIiLCI1Ni43NjUiLCIwJSJdLFsiMjMiLCIiLCIxMDAlIl0sWyIyNCIsIjUwLjgzNCIsIjAlIl0sWyIyNSIsIjQ1LjQxMiIsIjAlIl0sWyIyNiIsIjM5LjE2NCIsIjAlIl0sWyIyNyIsIjQ1LjMzMiIsIjAlIl0sWyIyOCIsIjQ3LjA2MiIsIjAlIl0sWyIyOSIsIjU0LjAyOSIsIjAlIl0sWyIzMCIsIiIsIjEwMCUiXSxbIjMxIiwiIiwiMTAwJSJdLFsiMzIiLCIiLCIxMDAlIl0sWyIzMyIsIjI5MC44ODkiLCIwJSJdLFsiMzQiLCI1OS4xNzMiLCIwJSJdLFsiMzUiLCIiLCIxMDAlIl0sWyIzNiIsIjQxMC43NjQiLCIwJSJdLFsiMzciLCIxODguNjg2IiwiMCUiXSxbIjM4IiwiMTg1LjUxNCIsIjAlIl0sWyIzOSIsIjQ2LjE5NCIsIjAlIl0sWyI0MCIsIiIsIjEwMCUiXSxbIjQxIiwiNTEuOTM4IiwiMCUiXSxbIjQyIiwiNDMuMTY4IiwiMCUiXSxbIjQzIiwiNDQuMjYwIiwiMCUiXSxbIjQ0IiwiNjMuNjUyIiwiMCUiXSxbIjQ1IiwiMTYxLjU1NSIsIjAlIl0sWyI0NiIsIjU0LjY0MCIsIjAlIl0sWyI0NyIsIiIsIjEwMCUiXSxbIjQ4IiwiIiwiMTAwJSJdLFsiNDkiLCIiLCIxMDAlIl0sWyI1MCIsIjUwLjg0NyIsIjAlIl0sWyI1MSIsIiIsIjEwMCUiXSxbIjUyIiwiNDkuNDM3IiwiMCUiXSxbIjUzIiwiNTguODQ0IiwiMCUiXSxbIjU0IiwiNDIuODM1IiwiMCUiXSxbIjU1IiwiNDIuNzQ0IiwiMCUiXSxbIjU2IiwiNDUuNTMxIiwiMCUiXSxbIjU3IiwiNTQuMzQ1IiwiMCUiXSxbIjU4IiwiIiwiMTAwJSJdLFsiNTkiLCIiLCIxMDAlIl0sWyI2MCIsIiIsIjEwMCUiXSxbIjYxIiwiMjM3LjgyOSIsIjAlIl0sWyI2MiIsIjY0LjUwNCIsIjAlIl0sWyI2MyIsIjI4NS4xMjEiLCIwJSJdLFsiNjQiLCI1MS4yMjkiLCIwJSJdLFsiNjUiLCIzNy45NDgiLCIwJSJdLFsiNjYiLCI0My43NzAiLCIwJSJdLFsiNjciLCIyOTYuODMyIiwiMCUiXSxbIjY4IiwiNDUuMDQ3IiwiMCUiXSxbIjY5IiwiNDEuNzY2IiwiMCUiXSxbIjcwIiwiNTUuNzI5IiwiMCUiXSxbIjcxIiwiNjMuNTMxIiwiMCUiXSxbIjcyIiwiNTQuNTE5IiwiMCUiXSxbIjczIiwiIiwiMTAwJSJdLFsiNzQiLCIiLCIxMDAlIl0sWyI3NSIsIiIsIjEwMCUiXSxbIjc2IiwiNDkuMjg3IiwiMCUiXSxbIjc3IiwiNTUuNDg1IiwiMCUiXSxbIjc4IiwiNTcuODI2IiwiMCUiXSxbIjc5IiwiNDcuMzIzIiwiMCUiXSxbIjgwIiwiNjcuNjQ3IiwiMCUiXSxbIjgxIiwiNDMuNzMzIiwiMCUiXSxbIjgyIiwiNDQuMzcwIiwiMCUiXSxbIjgzIiwiMTk0LjI4OCIsIjAlIl0sWyI4NCIsIiIsIjEwMCUiXSxbIjg1IiwiIiwiMTAwJSJdLFsiODYiLCIiLCIxMDAlIl0sWyI4NyIsIjU3Ljg1NCIsIjAlIl0sWyI4OCIsIjQyLjIyOSIsIjAlIl0sWyI4OSIsIjU4Ljk5OCIsIjAlIl0sWyI5MCIsIjYxLjEzOCIsIjAlIl0sWyI5MSIsIjM5LjY3NyIsIjAlIl0sWyI5MiIsIjQyLjc0MyIsIjAlIl0sWyI5MyIsIjUzLjc1NCIsIjAlIl0sWyI5NCIsIjc0LjczNCIsIjAlIl0sWyI5NSIsIiIsIjEwMCUiXSxbIjk2IiwiIiwiMTAwJSJdLFsiOTciLCIiLCIxMDAlIl0sWyI5OCIsIjQwLjkzMiIsIjAlIl0sWyI5OSIsIjM5LjQyMCIsIjAlIl0sWyIxMDAiLCI1Mi44MjAiLCIwJSJdLFsiMTAxIiwiMTY3LjM2MCIsIjAlIl0sWyIxMDIiLCIzOS4zNTUiLCIwJSJdLFsiMTAzIiwiNTAuNDY0IiwiMCUiXSxbIjEwNCIsIjQ1LjEzNSIsIjAlIl0sWyIxMDUiLCI2MC4wODAiLCIwJSJdLFsiMTA2IiwiIiwiMTAwJSJdLFsiMTA3IiwiIiwiMTAwJSJdLFsiMTA4IiwiIiwiMTAwJSJdXQo="
-    });
-
-    setState(() {
-      this.pings = pings;
-    });
+    getServerPing();
   }
 
   @override
@@ -64,7 +59,7 @@ class SSNode extends StatelessWidget {
   SSNode({this.node, this.ping});
 
   final SSConfigNode node;
-  final List<String> ping;
+  final String ping;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +82,7 @@ class SSNode extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5)),
                   child: Text(typeDes[node.type])),
               SSPing(
-                ping: ping[0],
+                ping: ping,
               )
             ],
           )
@@ -120,7 +115,7 @@ class SSPing extends StatelessWidget {
       return Text(
         "Loading...",
       );
-    } else if (ping.isEmpty) {
+    } else if (ping.isEmpty || ping == '0') {
       return Text(
         "Faild",
         style: TextStyle(color: Colors.red),

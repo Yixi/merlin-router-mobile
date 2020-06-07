@@ -85,17 +85,8 @@ List<SSConfigNode> generateNodes(Map<String, dynamic> configRes) {
   return nodes;
 }
 
-Map<String, List<String>> convertSSPing(dynamic resData) {
-  String result = resData['result'];
-  Map<String, List<String>> pings = Map();
-  List<dynamic> pingArray =
-      jsonDecode(String.fromCharCodes(base64Decode(result)));
-  pingArray.forEach((element) {
-    if (element != null) {
-      pings[element[0]] = [element[1], element[2]];
-    }
-  });
-  return pings;
+Map<String, String> convertSSPing(Map<String, dynamic> resData) {
+  return Map.from(resData.map((key, value) => MapEntry(key, value.toString())));
 }
 
 List<String> convertSSStatus(dynamic resData) {
