@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:merlin/http.dart';
 import 'package:merlin/utils/SSDataConvert.dart';
-import 'package:merlin/utils/tools.dart';
 
 class SSNodes extends StatefulWidget {
-  SSNodes({this.nodes});
+  SSNodes({this.nodes, @required this.onRefresh, this.key}) : super(key: key);
 
+  final Key key;
   final List<SSConfigNode> nodes;
+  final Future<void> Function() onRefresh;
 
   @override
   createState() => new _SSNodesState();
@@ -15,8 +16,8 @@ class SSNodes extends StatefulWidget {
 class _SSNodesState extends State<SSNodes> {
   Map<String, String> pings = Map();
 
-  void getServerPing() {
-    dio.get('/ss-ping').then((res) {
+  Future<dynamic> getServerPing() {
+    return dio.get('/ss-ping').then((res) {
       var result = convertSSPing(res.data);
       setState(() {
         this.pings = result;
@@ -35,20 +36,23 @@ class _SSNodesState extends State<SSNodes> {
     return DefaultTextStyle(
       style: TextStyle(color: Color(0xFFf0f1f2)),
       child: Flexible(
-        child: GridView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 15,
-              crossAxisSpacing: 15,
-              childAspectRatio: 1),
-          itemCount: widget.nodes.length,
-          itemBuilder: (context, index) {
-            return SSNode(
-              node: widget.nodes[index],
-              ping: pings[widget.nodes[index].key],
-            );
-          },
+        child: RefreshIndicator(
+          onRefresh: widget.onRefresh,
+          child: GridView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 15,
+                crossAxisSpacing: 15,
+                childAspectRatio: 1),
+            itemCount: widget.nodes.length,
+            itemBuilder: (context, index) {
+              return SSNode(
+                node: widget.nodes[index],
+                ping: pings[widget.nodes[index].key],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -64,6 +68,7 @@ class SSNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: Key(node.key),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: node.isSelected ? Color(0xFFf02d4d) : Color(0xFF364251),
