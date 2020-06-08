@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:merlin/SSNodes.dart';
+import 'package:merlin/SSStore.dart';
 import 'package:merlin/http.dart';
 import 'package:merlin/utils/SSDataConvert.dart';
+import 'package:provider/provider.dart';
 
 import 'SSStatus.dart';
 
+SSStore store = SSStore();
+
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => store,)
+    ], child: MyApp(),)
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +25,11 @@ class MyApp extends StatelessWidget {
 }
 
 Future<SSConfig> getSSConfig() =>
-    dio.get("/ss-config").then((res) => convertSSConfig(res.data));
+    dio.get("/ss-config").then((res) {
+      var ssConfig = convertSSConfig(res.data);
+      store.updateSSConfig(ssConfig);
+      return ssConfig;
+    });
 
 class Home extends StatefulWidget {
   @override

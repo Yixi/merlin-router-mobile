@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:merlin/SSNodes.dart';
 import 'package:merlin/http.dart';
 import 'package:merlin/utils/SSDataConvert.dart';
-import 'package:merlin/utils/tools.dart';
 
 class SSStatus extends StatefulWidget {
   SSStatus({this.current});
@@ -25,9 +24,11 @@ class _SSStatusState extends State<SSStatus> {
     }
     dio.get("/ss-status").then((res) {
       var result = convertSSStatus(res.data);
-      setState(() {
-        this.status = result;
-      });
+      if (this.mounted) {
+        setState(() {
+          this.status = result;
+        });
+      }
     }).whenComplete(
         () => {statusRequestTimer = Timer(Duration(seconds: 10), statusLoop)});
   }
