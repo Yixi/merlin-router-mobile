@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:merlin/SSLog.dart';
 import 'package:merlin/SSStore.dart';
 import 'package:merlin/http.dart';
 import 'package:merlin/utils/SSDataConvert.dart';
@@ -211,6 +212,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
     if (selectNodeKey!=null) {
       setState(() {
         this.isShow = true;
+        _controller.forward();
       });
     } else {
       _controller.reverse();
@@ -223,7 +225,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
     var selectNodeKey = context.watch<SSStore>().currentSelectNodeKey;
     var selectNodeName = context.watch<SSStore>().currentSelectNodeName;
     if (isShow) {
-      _controller.forward();
+//      _controller.forward();
       return AnimatedBuilder(
         animation: _controller,
         builder: (BuildContext context, Widget child) {
@@ -265,6 +267,9 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                     color: Color(0xFF9aa0aa),
                     onPressed: selectNodeKey != null
                         ? () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context){
+                              return SSLog();
+                            }));
                             _controller.reverse();
                           }
                         : null,
