@@ -64,7 +64,13 @@ class _SSNodesState extends State<SSNodes> {
               ),
             ),
 //SSAction()
-            Positioned(bottom: 0, left: 0, right: 0, child: SSAction())
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SSAction(
+                  onRefresh: widget.onRefresh,
+                ))
           ],
         ),
       ),
@@ -160,6 +166,10 @@ class SSPing extends StatelessWidget {
 }
 
 class SSAction extends StatefulWidget {
+  SSAction({this.onRefresh});
+
+  final Future<void> Function() onRefresh;
+
   @override
   createState() => _SSActionState();
 }
@@ -177,6 +187,10 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
               context.read<SSStore>().cancelSelect();
             }
           });
+  }
+
+  Future<void> applySSNode({String nodeKey}) {
+    return dio.post('/ss-apply', data: {"nodeKey": nodeKey});
   }
 
   @override
@@ -210,7 +224,14 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                     color: Color(0xfff02f4d),
                     onPressed: selectNodeKey != null
                         ? () {
-                            print('click');
+                            applySSNode(
+                                    nodeKey: context
+                                        .read<SSStore>()
+                                        .currentSelectNodeKey)
+                                .then((v) {
+                              _controller.reverse();
+                              widget.onRefresh();
+                            });
                           }
                         : null,
                     child: Text("应用"),
