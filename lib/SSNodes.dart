@@ -64,12 +64,7 @@ class _SSNodesState extends State<SSNodes> {
               ),
             ),
 //SSAction()
-            Positioned(
-              bottom: 0,
-                left: 0,
-                right: 0,
-                child: SSAction()
-            )
+            Positioned(bottom: 0, left: 0, right: 0, child: SSAction())
           ],
         ),
       ),
@@ -94,9 +89,11 @@ class SSNode extends StatelessWidget {
         padding: EdgeInsets.all(18),
         decoration: BoxDecoration(
             border: Border.all(
-                color: Color(context.watch<SSStore>().currentSelectNodeKey == node.key ? 0xFFf39544 : 0xFF364251),
-                width: 2.0
-            ),
+                color: Color(
+                    context.watch<SSStore>().currentSelectNodeKey == node.key
+                        ? 0xFFf39544
+                        : 0xFF364251),
+                width: 2.0),
             color: node.isSelected ? Color(0xFFf02d4d) : Color(0xFF364251),
             borderRadius: BorderRadius.circular(15.0)),
         child: Column(
@@ -165,81 +162,76 @@ class SSPing extends StatelessWidget {
 class SSAction extends StatefulWidget {
   @override
   createState() => _SSActionState();
-
 }
 
 class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
-
   AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 200)
-    );
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.dismissed) {
+              context.read<SSStore>().cancelSelect();
+            }
+          });
   }
 
   @override
   Widget build(BuildContext context) {
-    var selectNodeKey = context
-        .watch<SSStore>()
-        .currentSelectNodeKey;
-    var selectNodeName = context
-        .watch<SSStore>()
-        .currentSelectNodeName;
+    var selectNodeKey = context.watch<SSStore>().currentSelectNodeKey;
+    var selectNodeName = context.watch<SSStore>().currentSelectNodeName;
     if (selectNodeKey != null) {
       _controller.forward();
       return AnimatedBuilder(
         animation: _controller,
         builder: (BuildContext context, Widget child) {
           return Transform.translate(
-            offset: Offset(0, 100 * (1- _controller.value)),
+            offset: Offset(0, 150 * (1 - _controller.value)),
             child: child,
           );
         },
         child: Container(
           padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-              color: Color(0xFF364251)
-          ),
+          decoration: BoxDecoration(color: Color(0xFF364251)),
           child: SafeArea(
               child: Column(
+            children: <Widget>[
+              Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  alignment: Alignment.centerLeft,
+                  child: Text("当前选择：$selectNodeName")),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.only(bottom: 20),
-                      alignment: Alignment.centerLeft,
-                      child: Text("当前选择：$selectNodeName")
+                  CupertinoButton(
+                    color: Color(0xfff02f4d),
+                    onPressed: selectNodeKey != null
+                        ? () {
+                            print('click');
+                          }
+                        : null,
+                    child: Text("应用"),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CupertinoButton(
-                        color: Color(0xfff02f4d),
-                        onPressed: selectNodeKey != null ? () {
-                          print('click');
-                        } : null,
-                        child: Text("应用"),
-                      ),
-                      CupertinoButton(
-                        color: Color(0xFF9aa0aa),
-                        onPressed: selectNodeKey != null ? () {
-                          context.read<SSStore>().cancelSelect();
-                        } : null,
-                        child: Text("取消"),
-                      ),
-                    ],
+                  CupertinoButton(
+                    color: Color(0xFF9aa0aa),
+                    onPressed: selectNodeKey != null
+                        ? () {
+                            _controller.reverse();
+                          }
+                        : null,
+                    child: Text("取消"),
                   ),
                 ],
-              )
-          ),
+              ),
+            ],
+          )),
         ),
       );
     } else {
-      _controller.reverse();
       return SizedBox.shrink();
     }
   }
-
 }
