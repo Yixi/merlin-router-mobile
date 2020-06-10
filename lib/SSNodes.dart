@@ -38,6 +38,7 @@ class _SSNodesState extends State<SSNodes> {
 
   @override
   Widget build(BuildContext context) {
+    bool haveSelectNode = context.watch<SSStore>().currentSelectNodeKey != null;
     return DefaultTextStyle(
       style: TextStyle(color: Color(0xFFf0f1f2)),
       child: Flexible(
@@ -47,7 +48,11 @@ class _SSNodesState extends State<SSNodes> {
               child: RefreshIndicator(
                 onRefresh: widget.onRefresh,
                 child: GridView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                  padding: EdgeInsets.only(
+                      left: 15,
+                      right: 15,
+                      top: 20,
+                      bottom: haveSelectNode ? 200 : 20),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 15,
@@ -86,9 +91,14 @@ class SSNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var currentSelectNodeKey = context.watch<SSStore>().currentSelectNodeKey;
     return GestureDetector(
       onTap: () {
-        context.read<SSStore>().setSelectNode(key: node.key, name: node.name);
+        if (currentSelectNodeKey!= node.key) {
+          context.read<SSStore>().setSelectNode(key: node.key, name: node.name);
+        } else {
+          context.read<SSStore>().cancelSelect();
+        }
       },
       child: Container(
         key: Key(node.key),
@@ -96,9 +106,7 @@ class SSNode extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border.all(
                 color: Color(
-                    context.watch<SSStore>().currentSelectNodeKey == node.key
-                        ? 0xFFf39544
-                        : 0xFF364251),
+                    currentSelectNodeKey == node.key ? 0xFFf39544 : 0xFF364251),
                 width: 2.0),
             color: node.isSelected ? Color(0xFFf02d4d) : Color(0xFF364251),
             borderRadius: BorderRadius.circular(15.0)),
@@ -176,6 +184,7 @@ class SSAction extends StatefulWidget {
 
 class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
   AnimationController _controller;
+  bool isShow = false;
 
   @override
   void initState() {
@@ -185,6 +194,9 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
           ..addStatusListener((status) {
             if (status == AnimationStatus.dismissed) {
               context.read<SSStore>().cancelSelect();
+              setState(() {
+                isShow = false;
+              });
             }
           });
   }
@@ -194,10 +206,23 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
   }
 
   @override
+  void didChangeDependencies() {
+    var selectNodeKey = context.read<SSStore>().currentSelectNodeKey;
+    if (selectNodeKey!=null) {
+      setState(() {
+        this.isShow = true;
+      });
+    } else {
+      _controller.reverse();
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var selectNodeKey = context.watch<SSStore>().currentSelectNodeKey;
     var selectNodeName = context.watch<SSStore>().currentSelectNodeName;
-    if (selectNodeKey != null) {
+    if (isShow) {
       _controller.forward();
       return AnimatedBuilder(
         animation: _controller,

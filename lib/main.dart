@@ -10,22 +10,27 @@ import 'SSStatus.dart';
 SSStore store = SSStore();
 
 void main() {
-  runApp(
-    MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => store,)
-    ], child: MyApp(),)
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (_) => store,
+      )
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: Home()));
+    return MaterialApp(
+      home: Scaffold(body: Home()),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 
-Future<SSConfig> getSSConfig() =>
-    dio.get("/ss-config").then((res) {
+Future<SSConfig> getSSConfig() => dio.get("/ss-config").then((res) {
       var ssConfig = convertSSConfig(res.data);
       store.updateSSConfig(ssConfig);
       return ssConfig;
@@ -69,7 +74,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   SSConfig configState;
   num key = 0;
 
