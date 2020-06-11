@@ -191,15 +191,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200))
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.dismissed) {
-              context.read<SSStore>().cancelSelect();
-              setState(() {
-                isShow = false;
-              });
-            }
-          });
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
   }
 
   Future<void> applySSNode({String nodeKey}) {
@@ -218,6 +210,12 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
       _controller.reverse();
     }
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -256,9 +254,9 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                                         .read<SSStore>()
                                         .currentSelectNodeKey)
                                 .then((v) {
-                              showLog(context);
-                              _controller.reverse();
+                              context.read<SSStore>().cancelSelect();
                               widget.onRefresh();
+                              showLog(context);
                             });
                           }
                         : null,
@@ -268,7 +266,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                     color: Color(0xFF9aa0aa),
                     onPressed: selectNodeKey != null
                         ? () {
-                            _controller.reverse();
+                            context.read<SSStore>().cancelSelect();
                           }
                         : null,
                     child: Text("取消"),

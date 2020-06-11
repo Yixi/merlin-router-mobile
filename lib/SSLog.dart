@@ -89,7 +89,7 @@ class _SSLogState extends State<SSLog> with SingleTickerProviderStateMixin {
                       minWidth: double.infinity,
                     ),
                     child: Container(
-                      padding: EdgeInsets.only(top: 10, left: 15, right: 15),
+                      padding: EdgeInsets.only(top: 10, left: 15, right: 15, bottom: 10),
                       child: CupertinoButton(
                         color: Color(0xfff02f4d),
                         child: const Text('关闭'),
