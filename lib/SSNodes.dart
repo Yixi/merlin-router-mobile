@@ -95,7 +95,7 @@ class SSNode extends StatelessWidget {
     var currentSelectNodeKey = context.watch<SSStore>().currentSelectNodeKey;
     return GestureDetector(
       onTap: () {
-        if (currentSelectNodeKey!= node.key) {
+        if (currentSelectNodeKey != node.key) {
           context.read<SSStore>().setSelectNode(key: node.key, name: node.name);
         } else {
           context.read<SSStore>().cancelSelect();
@@ -209,7 +209,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     var selectNodeKey = context.read<SSStore>().currentSelectNodeKey;
-    if (selectNodeKey!=null) {
+    if (selectNodeKey != null) {
       setState(() {
         this.isShow = true;
         _controller.forward();
@@ -256,6 +256,7 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                                         .read<SSStore>()
                                         .currentSelectNodeKey)
                                 .then((v) {
+                              showLog(context);
                               _controller.reverse();
                               widget.onRefresh();
                             });
@@ -267,9 +268,6 @@ class _SSActionState extends State<SSAction> with TickerProviderStateMixin {
                     color: Color(0xFF9aa0aa),
                     onPressed: selectNodeKey != null
                         ? () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context){
-                              return SSLog();
-                            }));
                             _controller.reverse();
                           }
                         : null,
